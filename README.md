@@ -1,7 +1,9 @@
  
 ## Emaily
 
-React App built with the MERN stack following [this course](https://www.udemy.com/node-with-react-fullstack-web-development/learn/v4/overview). by Stephen Grider on Udemy. 
+React App built with the MERN stack following [this course](https://www.udemy.com/node-with-react-fullstack-web-development/learn/v4/overview) by Stephen Grider on Udemy. 
+
+Note: The code is heavily commented with my notes from the course - this may be helpful to those learning similar subjects as well.
 
 ### Features, topics and libraries/packages covered
 
