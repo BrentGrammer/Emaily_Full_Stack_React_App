@@ -15,5 +15,6 @@ Note: The code is heavily commented with my notes from the course - this may be 
 - Node/Express backend 
 - Middlewares and route handling
 - OAuth login flow using Passport.js and Google login
+- Cookie based authentication
 - Development and Production key settings 
 - API Key Creation and management
