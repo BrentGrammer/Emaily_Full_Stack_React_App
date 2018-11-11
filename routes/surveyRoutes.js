@@ -19,7 +19,7 @@ const surveyTemplate = require('../services/emailTemplates/surveyTemplate');
 module.exports = app => {
 
   // response route when user clicks link in email sent:
-  app.get('apis/surveys', (req, res) => {
+  app.get('apis/surveys/thanks', (req, res) => {
     res.send('Thanks for voting!');
   });
 
@@ -30,7 +30,7 @@ module.exports = app => {
    */
 
 
-  app.post('/api/surveys/thanks', requireLogin, /* requireCredits, */ async (req, res) => {
+  app.post('/api/surveys', requireLogin, /* requireCredits, */ async (req, res) => {
     console.log('req body', req.body);
     // note that here, recipients will be a string of comma separated email addresses
     const { title, subject, body, recipients } = req.body;
@@ -60,7 +60,7 @@ module.exports = app => {
        /* This is stripe code when stripe is integrated...
            Deduct credit from user when survey is submitted.
          */
-       req.user.credits -= 1;
+       //req.user.credits -= 1;
        const user = await req.user.save();
        // send back the updated user model from the database.
        res.send(user);

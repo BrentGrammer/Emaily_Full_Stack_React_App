@@ -7,20 +7,14 @@ import { reduxForm, Field } from 'redux-form';
 import { Link } from 'react-router-dom';
 import SurveyField from './SurveyField';
 import validateEmails from '../../utils/validateEmails';
-
-// create array of Fields to map over to condense code
-const FIELDS = [
-  { label: "Survey Title", name: "title" },
-  { label: "Subject Line", name: "subject" },
-  { label: "Email Body", name: "body" },
-  { label: "Recipient List", name: "emails" }
-];
+// when importing constant into another file - don't neceessarily capitalize the name.
+import formFields from './formFields';
 
 class SurveyForm extends Component {
   
 
   renderFields() {
-    return _.map(FIELDS, ({ label, name }) => {
+    return _.map(formFields, ({ label, name }) => {
       return <Field key={name} component={SurveyField} type="text" label={label} name={name} />
     })
   }
@@ -32,6 +26,9 @@ class SurveyForm extends Component {
             It can be used to send form data to the back end or process it some way. */}
         <form onSubmit={this.props.handleSubmit(this.props.onSurveySubmit)}>
           {this.renderFields()}
+          {/* Note: this cancel link unmounts the SurveyNew container component which causes redux-form to dump all the values from the store 
+              This is significant because if the user decides to leave the form to create a survey, the field values will not persist in the form
+              when the user comes back to create a new survey and the store is cleared to present a blank form.  */}
           <Link to="/surveys" className="red btn-flat white-text">
             Cancel
           </Link>
@@ -61,11 +58,11 @@ class SurveyForm extends Component {
 function validate(values) {
   const errors = {};
   // returns a message with invalid emails if found, otherwise returns null/undefined:
-  errors.emails = validateEmails(values.emails || '');  
+  errors.recipients = validateEmails(values.recipients || '');  
   // make sure to provide a default '' since validate fn runs on every render of the form component to avoid the error of 
   // error.emails being undefined and put this above the check for empty fields so it is overwritten with that message if field is empty
 
-  _.each(FIELDS, ({ name }) => {
+  _.each(formFields, ({ name }) => {
      if (!values[name]) {
        errors[name] = 'You must provide a value';
      }
@@ -79,5 +76,6 @@ function validate(values) {
 // it takes one argument which is an object of config options of 'form' or 'validate' for ex.
 export default reduxForm({
   validate, // this key can hold a function that will be called on each field when the form is submitted for validation
-  form: 'SurveyForm'
+  form: 'surveyForm', // this namespaces this particular form in the redux store form prop - all related data will be under this prop name - useful if you have multiple forms
+  destroyOnUnount: false // true by default - setting to false will preserve form field values if user goes back to the form
 })(SurveyForm);

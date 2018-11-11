@@ -1,5 +1,6 @@
-// SurveyNew shows SurveyForm and SurveyFormReview
+// SurveyNew is container component that shows pages of wizard form: SurveyForm or SurveyFormReview
 import React, { Component } from 'react';
+import { reduxForm } from 'redux-form';
 import SurveyForm from './SurveyForm';
 import SurveyFormReview from './SurveyFormReview';
 
@@ -29,4 +30,13 @@ class SurveyNew extends Component {
   }
 }
 
-export default SurveyNew;
+/**
+ * This hooks up the wizard form container to redux-form because redux-form has a default behavior that clears the store whenever a 
+ * component is unmounted that is hooked up to it and the destroyOnUnmount is not set to false (it is true by default).  
+ * 
+ * This means that even though the child form component has destroyOnUnmount set to false to persist field values, it will be overwritten
+ * when the parent container component is unmounted since it's destroyOnUnmount is set to true by default and the store will be cleared.
+ */
+export default reduxForm({
+  form: 'surveyForm'
+})(SurveyNew);
