@@ -8,7 +8,8 @@ class SurveyList extends Component {
   }
 
   renderSurveys() {
-    return this.props.surveys.map(survey => {
+    // Revers can be chained on before the map call to set the order of dates to be the newest first quickly.
+    return this.props.surveys.reverse().map(survey => {
       return (
         // remember to use _id instead of just id when referencing the uuid in mongo
         <div class="card blue-grey darken-1" key={survey._id}>
