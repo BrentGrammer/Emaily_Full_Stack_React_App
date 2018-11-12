@@ -8,4 +8,4 @@ const recipientSchema = new Schema({
 
 // This is configuring a sub-document collection:
 // Simply define the schema and export it in this file (without calling mongoose.model to create a model class).
-module.export = recipientSchema;
+module.exports = recipientSchema;

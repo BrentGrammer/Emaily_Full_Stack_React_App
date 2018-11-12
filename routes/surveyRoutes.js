@@ -1,3 +1,9 @@
+const _ = require('lodash');
+// this is used to extract data from the url in the webhook sent by SendGrid
+const Path = require('path-parser').default;
+// url is a default integrated module that comes with Node.js
+// This helper comes with methods to grab parts/chunks of the url in the webhook (i.e. the pathname without the domain)
+const { URL } = require('url');
 const mongoose = require('mongoose');
 const requireLogin = require('../middlewares/requireLogin');
 // this can be used with payments like Stripe to check that user has purchased credits - can be passed in as additional middleware once
@@ -18,8 +24,18 @@ const surveyTemplate = require('../services/emailTemplates/surveyTemplate');
 // object are not in hand yet to process manually, and the middleware will have access when express calls it.
 module.exports = app => {
 
+  //returns list of surveys - note it's a get request while the webhook route is a post request to the same path:
+  app.get('/api/surveys', requireLogin, async (req, res) => {
+    // find all surveys that have a _user = the user id in the req object set by passport.js\
+    // use select chained method on the returned query object to limit the fields queried (so sub-documents are not queried as well)
+    const surveys = await Survey.find({ _user: req.user.id })
+      .select({ recipients: false });
+
+    res.send(surveys);
+  });
+
   // response route when user clicks link in email sent:
-  app.get('apis/surveys/thanks', (req, res) => {
+  app.get('/api/surveys/:surveyId/:choice', (req, res) => {
     res.send('Thanks for voting!');
   });
 
@@ -27,7 +43,55 @@ module.exports = app => {
    * Alternative way to handle the confirmation route when user clicks link, is to add a redirectUrl field to the survey model which 
    * holds urls that are specific to the link the user clicked in the email and your route handlers for those links can handle a 
    * corresponding custom response.
+   * 
+   *  Filtering of webhook data uses _.chain lodash helper to prevent repetitive passing of the array in iteration steps.
    */
+
+  /**** WEBHOOKS HANDLER *****/
+  app.post('/api/surveys/webhooks', (req, res) => {
+
+    // path-parser helper will allow you to take variables from the path url assigned with `:<name>`:
+    const p = new Path('/api/surveys/:surveyId/:choice');
+
+    _.chain(req.body)
+      // const events = _.map(req.body, (event) => {
+      .map(({ email, url }) => {
+        console.log('url FROM MAP: ', url);
+        // using test on the path-parser route extraction const will return null if operation fails, otherwise it will return 
+        // an object that has the wildcard variables extracted as keys and their values.
+        // url module from Node will get the route removing the domain name
+        const match = p.test(new URL(url).pathname);
+        if (match) {
+          return { email, surveyId: match.surveyId, choice: match.choice };
+        }
+      })
+      // remove any elements that return undefined from the p.test() call:
+      // lodash helper compact removes any undefined elements in an array:
+      .compact()
+      // remove duplicate events i.e. if user clicked twice on the link and remove them:
+      // uniqBy from lodash will remove any entries that have a duplicate value on *all* of the keys passed in:
+      .uniqBy('email', 'surveyId')
+      .each(({ surveyId, email, choice }) => {
+        Survey.updateOne({
+           // $inc is a Mongo Operator for incrementing a value, the [choice] is using key interpolation from ES6 to set the key of 
+        //the object to the variable choice at runtime.
+        
+        // $set finds a property in the collection and assigns a value to the field specified.  The $ matches the $elemMatch in 
+        //the previous updateOne query and then the responded prop on that match is set to true.
+          _id: surveyId,
+          recipients: {
+            $elemMatch: { email: email, responded: false }
+          }
+        }, {
+          $inc: { [choice]: 1 },
+          $set: { 'recipients.$.responded': true } 
+        }).exec();
+      })
+      .value();
+
+      // send empty response to sendgrid - this may help with repeated webhooks being sent
+      res.send({});
+  });
 
 
   app.post('/api/surveys', requireLogin, /* requireCredits, */ async (req, res) => {

@@ -8,5 +8,5 @@ module.exports = function(app) {
   // this tells the react server to proxy requests to the auth/google endpoint through the back end server domain 
   // (at port 5000 instead of 3000 on the client).  This allows the use of relative paths in the code to backend endpoints.
   app.use(proxy('/auth/google', { target: 'http://localhost:5000' }));
-  app.use(proxy('/api/*', { target: 'http://localhost:5000' }));
-}
+  app.use(proxy('/api', { target: 'http://localhost:5000' }));
+};

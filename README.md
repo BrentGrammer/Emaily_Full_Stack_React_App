@@ -12,9 +12,13 @@ Note: The code is heavily commented with my notes from the course - this may be 
 - Uses SendGrid to send mass emails to users and record response links clicked by the user.
 - Uses Redux-Form for multi page wizard forms and validation
 - Full CRUD operations with MongoDB using Mongoose
+- Mongo Operators
 - Node/Express backend 
 - Middlewares and route handling
 - OAuth login flow using Passport.js and Google login
 - Cookie based authentication
 - Development and Production key settings 
 - API Key Creation and management
+- Webhooks in production and development (using LocalTunnel)
+- Lodash for iterator helper functions
+- path-parser library for extracting data from a url path
