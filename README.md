@@ -13,7 +13,7 @@ Note: The code is heavily commented with my notes from the course - this may be 
 - Clickable links on Surveys to get user feedback
 - Uses SendGrid to send mass emails to users and record response links clicked by the user.
 - Uses Redux-Form for multi page wizard forms and validation
-- Full CRUD operations with MongoDB using Mongoose
+- Create and Read operations with MongoDB using Mongoose
 - Mongo Operators
 - Node/Express backend 
 - Middlewares and route handling
