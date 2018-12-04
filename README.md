@@ -1,7 +1,7 @@
  
 # Emaily
 
-## React App built with the MERN stack following [this course](https://www.udemy.com/node-with-react-fullstack-web-development/learn/v4/overview) by Stephen Grider on Udemy. 
+## React App built with the MERN stack following [this course](https://www.udemy.com/node-with-react-fullstack-web-development/) by Stephen Grider on Udemy. 
 
 ### [Click here for a working link to the App](https://guarded-shore-11838.herokuapp.com).
 
